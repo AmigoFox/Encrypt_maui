@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Encrypt.CreateKey"
+             Title="CreateKey">
+
+
+    <VerticalStackLayout Padding="20" Spacing="10">
+        <Label Text="Выберите длину ключей RSA" FontSize="18" />
+        <Picker x:Name="KeySizePicker" 
+                Title="ключи:" 
+                SelectedIndexChanged="OnKeySizeSelected">
+            <Picker.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>512 бит, минимальная длина, используется только для тестов, не рекомендуется для реальных задач</x:String>
+                    <x:String>1024 бит, устаревший стандарт, слабая защита, подходит только для ограниченных сценариев</x:String>
+                    <x:String>2048 бит, рекомендуемый стандарт для современных приложений, сбалансированная безопасность и производительность</x:String>
+                    <x:String>4096 бит, высокая безопасность, подходит для долгосрочной защиты данных. Требует много вычислительной мощности</x:String>
+                </x:Array>
+            </Picker.ItemsSource>
+        </Picker>
+
+        <Button Text="Создать ключи RSA"
+                Clicked="CreateKeyRSA"
+                BackgroundColor="Black"
+                TextColor="White"
+                FontSize="20"
+                CornerRadius="10"/>
+
+        <!--  Публичный ключ RSA-->
+        <Label>Публичный ключ RSA</Label>
+        <ScrollView Orientation="Vertical" HeightRequest="100">
+            <Editor x:Name="PublicKeyRSA"
+                    Keyboard="Chat"
+                    Placeholder="Публичный ключ RSA" 
+                    PlaceholderColor="Black"
+                    BackgroundColor="LightGray"
+                    TextColor="Purple"
+                    FontSize="18"
+                    HorizontalTextAlignment="Center"/>
+        </ScrollView>
+
+        <!--  Приватный ключ 1 RSA -->
+        <Label>Приватный ключ 1 RSA</Label>
+        <ScrollView Orientation="Vertical" HeightRequest="100">
+            <Editor x:Name="PrivatKeyRSA1"
+                    Keyboard="Chat"
+                    Placeholder="Приватный ключ RSA для себя" 
+                    PlaceholderColor="Black"
+                    BackgroundColor="LightGray"
+                    TextColor="Purple"
+                    FontSize="18"
+                    HorizontalTextAlignment="Center"/>
+        </ScrollView>
+
+        <!--  Приватный ключ 2 RSA -->
+        <Label>Приватный ключ 2 RSA</Label>
+        <ScrollView Orientation="Vertical" HeightRequest="100">
+            <Editor x:Name="PrivatKeyRSA2"
+                    Keyboard="Chat"
+                    Placeholder="Приватный ключ RSA для собеседникаы" 
+                    PlaceholderColor="Black"
+                    BackgroundColor="LightGray"
+                    TextColor="Purple"
+                    FontSize="18"
+                    HorizontalTextAlignment="Center"/>
+        </ScrollView>
+
+        <Button Text="Создать ключи AES"
+                Clicked="CreateKeyAES"
+                BackgroundColor="Black"
+                TextColor="White"
+                FontSize="20"
+                CornerRadius="10"/>
+        
+        <Label>ключ AES</Label>
+        <ScrollView Orientation="Vertical" HeightRequest="100">
+            <Editor x:Name="AESKey"
+            Text="{Binding AESKEY}"
+            Keyboard="Chat"
+            Placeholder="ключ AES" 
+            PlaceholderColor="Black"
+            BackgroundColor="LightGray"
+            TextColor="Purple"
+            FontSize="18"
+            HorizontalTextAlignment="Center"/>
+        </ScrollView>
+        
+        <Label>ключ IV</Label>
+        <ScrollView Orientation="Vertical" HeightRequest="100">
+            <Editor x:Name="IVKey"
+            Text="{Binding IVKEY}"
+            Keyboard="Chat"
+            Placeholder="IV" 
+            PlaceholderColor="Black"
+            BackgroundColor="LightGray"
+            TextColor="Purple"
+            FontSize="18"
+            HorizontalTextAlignment="Center"/>
+        </ScrollView>
+
+    </VerticalStackLayout>
+
+</ContentPage>

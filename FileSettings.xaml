@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Encrypt.FileSettings"
+             Title="FileSettings">
+    
+    <StackLayout Spacing="10">
+
+        <Button Text="Сохранить текст шифрования"
+                Clicked="SaveFileButtonEncrypt"
+                BackgroundColor="Black"
+                TextColor="White"
+                FontSize="20"
+                CornerRadius="10"
+                />
+
+        <Button Text="Прочитать файл, для дальнейщей расшифровки"
+                Clicked="ReadFileButtonEncrypt"
+                BackgroundColor="Black"
+                TextColor="White"
+                FontSize="20"
+                CornerRadius="10"
+                />
+
+        <Button Text="Выбрать файл (.txt) для сохранений"
+                Clicked="SelectFileButtonEncrypt"
+                BackgroundColor="Black"
+                TextColor="White"
+                FontSize="20"
+                CornerRadius="10"
+                />
+
+        <Button Text="Очистить выбранный файл"
+                Clicked="ClearFileButtonEncrypt"
+                BackgroundColor="Black"
+                TextColor="White"
+                FontSize="20"
+                CornerRadius="10"
+                />
+        <!--  путь файла -->
+        <ScrollView Orientation="Vertical" HeightRequest="100">
+            <Editor x:Name="filePath"
+                    Keyboard="Chat"
+                    Placeholder="Путь к файлу" 
+                    PlaceholderColor="Black"
+                    BackgroundColor="LightGray"
+                    TextColor="Purple"
+                    FontSize="18"
+                    HorizontalTextAlignment="Center"/>
+        </ScrollView>
+
+
+        <!--  имя файла -->
+        <ScrollView Orientation="Vertical" HeightRequest="100">
+            <Editor x:Name="fileName"
+                    Keyboard="Chat"
+                    Placeholder="Имя файла" 
+                    PlaceholderColor="Black"
+                    BackgroundColor="LightGray"
+                    TextColor="Purple"
+                    FontSize="18"
+                    HorizontalTextAlignment="Center"/>
+        </ScrollView>
+    </StackLayout>
+    
+</ContentPage>

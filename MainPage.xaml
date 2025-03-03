@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Encrypt.MainPage">
+
+    <StackLayout Spacing="5">
+
+        <!-- Поле для ввода текста -->
+        <ScrollView Orientation="Vertical" HeightRequest="100">
+            <Editor x:Name="InputTextEntry" 
+                    Placeholder="Введите текст для шифрования"
+                    PlaceholderColor="Black"
+                    FontSize="18"
+                    BackgroundColor="LightGray"
+                    TextColor="Black"
+                    HorizontalTextAlignment="Center"/>
+        </ScrollView>
+
+        <!-- Поля для ключей RSA -->
+        <ScrollView Orientation="Both" HeightRequest="100">
+            <StackLayout Orientation="Horizontal" Spacing="10">
+                <Editor x:Name="PublicKeyNEntry" 
+                        Placeholder="Публичный ключ RSA"
+                        FontSize="16"
+                        WidthRequest="160"
+                        PlaceholderColor="Black"/>
+                <Editor x:Name="PrivateKeyDEntry" 
+                        Placeholder="Приватный ключ RSA"
+                        FontSize="16"
+                        WidthRequest="160"
+                        PlaceholderColor="Black"/>
+            </StackLayout>
+        </ScrollView>
+
+        <!-- Поля для ключей AES -->
+        <ScrollView Orientation="Both" HeightRequest="100">
+            <StackLayout Orientation="Horizontal" Spacing="10">
+                <Editor x:Name="AesKeyEntry" 
+                        Placeholder="Ключ AES (16/24/32 байта)"
+                        FontSize="16"
+                        WidthRequest="160"
+                        PlaceholderColor="Black"/>
+                <Editor x:Name="IvEntry" 
+                        Placeholder="ключ IV (16 байт)"
+                        FontSize="16"
+                        WidthRequest="160"
+                        PlaceholderColor="Black"/>
+            </StackLayout>
+        </ScrollView>
+
+        <!-- Кнопка для шифрования -->
+        <Button Text="Зашифровать"
+                Clicked="OnEncryptClicked"
+                BackgroundColor="Black"
+                TextColor="White"
+                FontSize="20"
+                CornerRadius="10"/>
+
+        <!-- Поле для результата шифрования -->
+        <ScrollView Orientation="Vertical" HeightRequest="100">
+            <Editor x:Name="OutputLabelEncrypt"
+                    Placeholder="Результат шифрования" 
+                    PlaceholderColor="Black"
+                    BackgroundColor="LightGray"
+                    TextColor="Purple"
+                    FontSize="18"
+                    HorizontalTextAlignment="Center"/>
+        </ScrollView>
+
+        <BoxView HeightRequest="1" BackgroundColor="Gray" />
+
+        <!-- Поле для ввода зашифрованного текста -->
+        <ScrollView Orientation="Vertical" HeightRequest="100">
+            <Editor x:Name="OutputTextEntry" 
+                    Placeholder="Введите текст для расшифрования"
+                    FontSize="18"
+                    BackgroundColor="LightGray"
+                    TextColor="Black"
+                    PlaceholderColor="Black"
+                    HorizontalTextAlignment="Center"/>
+        </ScrollView>
+
+        <!-- Кнопка для расшифрования -->
+        <Button Text="Расшифровать"
+                Clicked="OnDecryptClicked"
+                BackgroundColor="Black"
+                TextColor="White"
+                FontSize="20"
+                CornerRadius="10"/>
+
+        <!-- Поле для результата расшифрования -->
+        <ScrollView Orientation="Vertical" HeightRequest="100">
+            <Editor x:Name="OutputText"
+                    Placeholder="Результат расшифрования"
+                    PlaceholderColor="Black"
+                    BackgroundColor="LightGray"
+                    TextColor="Purple"
+                    FontSize="18"
+                    HorizontalTextAlignment="Center"/>
+        </ScrollView>
+
+        <!-- Скрытое поле для промежуточного результата -->
+        <Editor x:Name="OutputText_pr"
+                Text="Результат расшифрования"
+                BackgroundColor="LightGray"
+                TextColor="Purple"
+                FontSize="18"
+                HorizontalTextAlignment="Center"
+                IsVisible="False"/>
+
+        <!-- Создание нового профиля -->
+        <Label Text="Введите название нового профиля:" />
+        <Entry x:Name="ProfileNameEntry" Placeholder="Имя профиля" />
+
+        <ScrollView Orientation="Both" HeightRequest="50">
+            <StackLayout Orientation="Horizontal" Spacing="10">
+                <Button Text="Создать профиль" Clicked="OnCreateProfileClicked" />
+                <Button Text="Удалить профиль" Clicked="OnDeleteProfileClicked" />
+            </StackLayout>
+        </ScrollView>
+
+        <!-- Выбор профиля -->
+
+        <ScrollView Orientation="Both" HeightRequest="50">
+            <StackLayout Orientation="Horizontal" Spacing="50"
+                 HorizontalOptions="Center" VerticalOptions="Center">
+
+  
+                <Label Text="Выберите профиль для смены ключей" 
+               HorizontalOptions="Center" 
+               VerticalOptions="Center"
+               HorizontalTextAlignment="Center"/>
+
+
+                <Picker x:Name="ProfilePicker" 
+                SelectedIndexChanged="OnProfileChanged" 
+                HorizontalOptions="Center"
+                VerticalOptions="Center"/>
+
+                <Label Text="Выберите профиль(ли) для удаления" 
+               HorizontalOptions="Center" 
+               VerticalOptions="Center"
+               HorizontalTextAlignment="Center"/>
+                <!-- Внутренний ScrollView с коллекцией -->
+                <ScrollView Orientation="Vertical" HeightRequest="40">
+                    <CollectionView x:Name="ProfileListView"
+                            SelectionMode="Multiple"
+                            ItemsSource="{Binding ProfileNames}"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Label Text="{Binding .}" 
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               HorizontalTextAlignment="Center"/>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </ScrollView>
+
+            </StackLayout>
+        </ScrollView>
+
+
+
+
+    </StackLayout>
+</ContentPage>
