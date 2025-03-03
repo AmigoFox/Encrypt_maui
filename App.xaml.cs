@@ -6,10 +6,11 @@ namespace Encrypt
         public App()
         {
             InitializeComponent();
+
         }
 
         public static string? CurrentProfile { get; internal set; }
-        
+
         protected override Window CreateWindow(IActivationState? activationState)
         {
             return new Window(new AppShell());
@@ -19,8 +20,5 @@ namespace Encrypt
         {
             throw new NotImplementedException();
         }
-
-
- 
     }
 }

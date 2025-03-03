@@ -199,30 +199,21 @@ namespace Encrypt
             }
         }
 
-        private void LoadProfiles()
+private void LoadProfiles()
         {
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ProfilesFolder);
-
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
 
-            var directories = Directory.GetDirectories(path);
-
-            profileNames.Clear();
-
-            foreach (var directory in directories)
-            {
-                profileNames.Add(Path.GetFileName(directory));
-            }
-
-            ProfileListView.ItemsSource = null;
+            profileNames = Directory.GetDirectories(path).Select(Path.GetFileName).ToList();
+            ProfilePicker.ItemsSource = profileNames;
             ProfileListView.ItemsSource = profileNames;
 
             if (profileNames.Count > 0)
             {
-                ProfileListView.SelectedItem = profileNames[0];
+                ProfilePicker.SelectedIndex = 0;
                 currentProfile = profileNames[0];
                 LoadKeysForProfile(currentProfile);
             }
@@ -285,7 +276,7 @@ namespace Encrypt
             }
         }
 
-        private async Task SaveKeysForProfile(string profileName)
+        private async Task SaveKeysForProfile(string profileName)// сделать проверрку на null, а то ключи могут быть пустыми при смене
         {
             string profilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Profiles", profileName);
 
@@ -303,20 +294,7 @@ namespace Encrypt
             }
         }
 
-        public async Task SavePublicKeyN()
-        {
-            try
-            {
-                await SaveTextToFile("privateKeyRSA.txt", PrivateKeyDEntry?.Text ?? "", true);
-                await SaveTextToFile("publicKeyKeyRSA.txt", PublicKeyNEntry?.Text ?? "", true);
-                await SaveTextToFile("ivString.txt", IvEntry?.Text ?? "");
-                await SaveTextToFile("keyString.txt", AesKeyEntry?.Text ?? "");
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Ошибка", $"Ошибка при сохранении данных: {ex.Message}", "OK");
-            }
-        }
+
         public async Task SaveTextToFile(string fileName, string text, bool isBigInteger = false)
         {
             string filePath = Path.Combine(FileSystem.AppDataDirectory, fileName);
@@ -338,6 +316,40 @@ namespace Encrypt
             }
         }
 
+        private async void PublicKey_RSA(object sender, TextChangedEventArgs e)
+        {
+            string newText = e.NewTextValue;
+            await SaveKeysForProfile(newText);
 
+            LoadProfiles();
+            LoadProfilesNow();
+        }
+        
+        private async void PrivatKey_RSA(object sender, TextChangedEventArgs e)
+        {
+            string newText = e.NewTextValue;
+            await SaveKeysForProfile(newText);
+
+            LoadProfiles();
+            LoadProfilesNow();
+        }
+
+        private async void AES(object sender, TextChangedEventArgs e)
+        {
+            string newText = e.NewTextValue;
+            await SaveKeysForProfile(newText);
+
+            LoadProfiles();
+            LoadProfilesNow();
+        }
+
+        private async void IV(object sender, TextChangedEventArgs e)
+        {
+            string newText = e.NewTextValue;
+            await SaveKeysForProfile(newText);
+
+            LoadProfiles();
+            LoadProfilesNow();
+        }
     }
 }

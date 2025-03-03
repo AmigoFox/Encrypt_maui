@@ -4,8 +4,6 @@
              x:Class="Encrypt.MainPage">
 
     <StackLayout Spacing="5">
-
-        <!-- Поле для ввода текста -->
         <ScrollView Orientation="Vertical" HeightRequest="100">
             <Editor x:Name="InputTextEntry" 
                     Placeholder="Введите текст для шифрования"
@@ -23,12 +21,15 @@
                         Placeholder="Публичный ключ RSA"
                         FontSize="16"
                         WidthRequest="160"
-                        PlaceholderColor="Black"/>
+                        PlaceholderColor="Black"
+                        TextChanged="PublicKey_RSA"/>
+                
                 <Editor x:Name="PrivateKeyDEntry" 
                         Placeholder="Приватный ключ RSA"
                         FontSize="16"
                         WidthRequest="160"
-                        PlaceholderColor="Black"/>
+                        PlaceholderColor="Black"
+                        TextChanged="PrivatKey_RSA"/>
             </StackLayout>
         </ScrollView>
 
@@ -39,12 +40,16 @@
                         Placeholder="Ключ AES (16/24/32 байта)"
                         FontSize="16"
                         WidthRequest="160"
-                        PlaceholderColor="Black"/>
+                        PlaceholderColor="Black"
+                        TextChanged="AES"/>
+                
                 <Editor x:Name="IvEntry" 
                         Placeholder="ключ IV (16 байт)"
                         FontSize="16"
                         WidthRequest="160"
-                        PlaceholderColor="Black"/>
+                        PlaceholderColor="Black"
+                        TextChanged="IV"
+                        />
             </StackLayout>
         </ScrollView>
 
