@@ -6,8 +6,13 @@ public partial class FileSettings : ContentPage
 {
     private string? _filePath;
     private string? _fileName;
-    private string _receivedEncryptedText; 
+    private string _receivedEncryptedText;
 
+    public FileSettings()
+    {
+        InitializeComponent();
+
+    }
     public FileSettings(string encryptedText)
     {
         InitializeComponent(); 

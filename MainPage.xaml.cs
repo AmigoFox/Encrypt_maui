@@ -199,7 +199,7 @@ namespace Encrypt
             }
         }
 
-private void LoadProfiles()
+        private void LoadProfiles()
         {
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ProfilesFolder);
             if (!Directory.Exists(path))
@@ -319,37 +319,59 @@ private void LoadProfiles()
         private async void PublicKey_RSA(object sender, TextChangedEventArgs e)
         {
             string newText = e.NewTextValue;
-            await SaveKeysForProfile(newText);
 
-            LoadProfiles();
-            LoadProfilesNow();
+            // Если ключ был изменен и не пустой, сохраняем его
+            if (!string.IsNullOrEmpty(currentProfile) && newText != PublicKeyNEntry.Text)
+            {
+                if (!string.IsNullOrEmpty(newText)) // Проверяем, чтобы ключ не был пустым
+                {
+                    await SaveKeysForProfile(currentProfile);
+                }
+            }
         }
-        
+
         private async void PrivatKey_RSA(object sender, TextChangedEventArgs e)
         {
             string newText = e.NewTextValue;
-            await SaveKeysForProfile(newText);
 
-            LoadProfiles();
-            LoadProfilesNow();
+            // Если ключ был изменен и не пустой, сохраняем его
+            if (!string.IsNullOrEmpty(currentProfile) && newText != PrivateKeyDEntry.Text)
+            {
+                if (!string.IsNullOrEmpty(newText)) // Проверяем, чтобы ключ не был пустым
+                {
+                    await SaveKeysForProfile(currentProfile);
+                }
+            }
         }
 
         private async void AES(object sender, TextChangedEventArgs e)
         {
             string newText = e.NewTextValue;
-            await SaveKeysForProfile(newText);
 
-            LoadProfiles();
-            LoadProfilesNow();
+            // Если ключ был изменен и не пустой, сохраняем его
+            if (!string.IsNullOrEmpty(currentProfile) && newText != AesKeyEntry.Text)
+            {
+                if (!string.IsNullOrEmpty(newText)) // Проверяем, чтобы ключ не был пустым
+                {
+                    await SaveKeysForProfile(currentProfile);
+                }
+            }
         }
 
         private async void IV(object sender, TextChangedEventArgs e)
         {
             string newText = e.NewTextValue;
-            await SaveKeysForProfile(newText);
 
-            LoadProfiles();
-            LoadProfilesNow();
+            // Если ключ был изменен и не пустой, сохраняем его
+            if (!string.IsNullOrEmpty(currentProfile) && newText != IvEntry.Text)
+            {
+                if (!string.IsNullOrEmpty(newText)) // Проверяем, чтобы ключ не был пустым
+                {
+                    await SaveKeysForProfile(currentProfile);
+                }
+            }
         }
+
     }
+
 }
