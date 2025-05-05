@@ -11,18 +11,18 @@ namespace Encrypt
 {
     class EncryptionService
     {
-        public static string RSA_Encrypt(string PublicKeyNEntry, string PrivateKeyDEntry, string inputText)
+        public static string RSA_Encrypt(string PublicKeyNEntry, string PrivateKeyDEntry, string inputText)//принимает аргументы
         {
             try
             {
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                Encoding win1251 = Encoding.GetEncoding(1251);
+                Encoding win1251 = Encoding.GetEncoding(1251); //Реистрируем кодировку 1251, чтобы можно было перевести из текста в неёё
 
                 // Проверка ключей RSA
                 if (!BigInteger.TryParse(PublicKeyNEntry, out BigInteger publicKeyN) ||
                     !BigInteger.TryParse(PrivateKeyDEntry, out BigInteger privateKeyE))
                 {
-                    return "Ошибка, некорекр=тный ключ RSA";
+                    return "Ошибка, некорекретный ключ RSA";
                 }
 
                 string inputtext = inputText;
@@ -33,26 +33,26 @@ namespace Encrypt
                     return "Введите текст для шифрования.";
                 }
 
-                List<BigInteger> encryptedValues = new List<BigInteger>();
+                List<BigInteger> encryptedValues = new List<BigInteger>();// создание нового списка BigInteger(числа с произвольной длинной)
                 byte[] bytes = win1251.GetBytes(inputText);
 
                 foreach (byte b in bytes)
                 {
                     BigInteger asciiValue = b;
-                    if (asciiValue >= publicKeyN)
+                    if (asciiValue >= publicKeyN)// проверка что символ не выходит за пределы кодировки
                     {
                         return $"Символ '{(char)b}' слишком большой для шифрования.";
                     }
 
-                    BigInteger encryptedValue = BigInteger.ModPow(asciiValue, privateKeyE, publicKeyN);
-                    encryptedValues.Add(encryptedValue);
+                    BigInteger encryptedValue = BigInteger.ModPow(asciiValue, privateKeyE, publicKeyN);// возведение переведенное числа из символа в число в степень приватного ключа и сразу деление его по модулю на публичный ключ 
+                    encryptedValues.Add(encryptedValue);// Добавление расчитанного набора цифр в список
                 }
 
                 return string.Join(" ", encryptedValues);
             }
             catch (Exception ex)
             {
-                return $"Ошибка RSA шифрования: {ex.Message}";
+                return $"Ошибка RSA шифрования: {ex.Message}";// обработка ошибок
             }
         }
 
@@ -70,7 +70,7 @@ namespace Encrypt
 
                 }
 
-                StringBuilder finalMessage = new StringBuilder();
+                StringBuilder finalMessage = new StringBuilder();// создаем изменяемую строку, куда будем сохранять расшифровку текста
                 string words = inputText;
 
 
@@ -79,8 +79,8 @@ namespace Encrypt
                     return "Зашифрованный текст пуст.";
                 }
 
-                Encoding win1251 = Encoding.GetEncoding(1251);
-                string[] numbers = words.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                Encoding win1251 = Encoding.GetEncoding(1251);// Регистрируем кодировку 1251
+                string[] numbers = words.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);// удаляем пробелы в начале и в конце, разделяем строчку по пробелам
 
                 foreach (string number in numbers)
                 {
@@ -90,12 +90,12 @@ namespace Encrypt
                         return $"Некорректное число: {number}";
                     }
 
-                    BigInteger decryptedValue = BigInteger.ModPow(num, privateD, publicKeyN);
+                    BigInteger decryptedValue = BigInteger.ModPow(num, privateD, publicKeyN);// возведение переведенное числа из символа в число в степень приватного ключа и сразу деление его по модулю на публичный ключ 
 
-                    if (decryptedValue >= 0 && decryptedValue <= 255)
+                    if (decryptedValue >= 0 && decryptedValue <= 255)// Проверка на то, чтобы число не выходило за пределы чисел кодировка 1251
                     {
-                        byte byteValue = (byte)decryptedValue;
-                        finalMessage.Append(win1251.GetString(new byte[] { byteValue }));
+                        byte byteValue = (byte)decryptedValue;// Переводим из числвого значение обратно в символы, тобиш текст
+                        finalMessage.Append(win1251.GetString(new byte[] { byteValue }));// добавляем в изменяемую строку результат
                     }
                     else
                     {
@@ -118,44 +118,45 @@ namespace Encrypt
             {
                 string Inputtext = inputText;
 
-                // Проверка входного текста
+                // Проверка входного текста на пустоту
                 if (string.IsNullOrWhiteSpace(Inputtext))
                 {
-                    return "Введите текст для шифрования.";
+                    return "Введите текст для шифрования."; // Если текст пустой, возвращаем сообщение об ошибке
                 }
 
                 string KeyStringAES = keyString;
                 string IVString = ivString;
 
-                // Проверка ключа и IV
+                // Проверка ключа и вектора инициализации (IV) на пустоту
                 if (string.IsNullOrWhiteSpace(keyString) || string.IsNullOrWhiteSpace(ivString))
                 {
-                    return "Введите ключ и IV для AES.";
+                    return "Введите ключ и IV для AES."; // Если ключ или IV пустые, возвращаем сообщение об ошибке
                 }
 
-                byte[] key = Convert.FromHexString(KeyStringAES.Replace("-", ""));
-                byte[] iv = Convert.FromHexString(IVString.Replace("-", ""));
+                // Преобразование строки ключа из шестнадцатеричного формата в массив байтов
+                byte[] key = Convert.FromHexString(KeyStringAES.Replace("-", "")); // Убираем дефисы и преобразуем в байты
+                byte[] iv = Convert.FromHexString(IVString.Replace("-", "")); // То же самое для IV
 
-                using (Aes aes = Aes.Create())
+                using (Aes aes = Aes.Create()) // Создаем экземпляр AES
                 {
-                    aes.Key = key;
-                    aes.IV = iv;
+                    aes.Key = key; // Устанавливаем ключ
+                    aes.IV = iv;   // Устанавливаем вектор инициализации (IV)
 
-                    using (MemoryStream msEncrypt = new MemoryStream())
+                    using (MemoryStream msEncrypt = new MemoryStream()) // Создаем поток для записи зашифрованных данных
                     {
                         using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, aes.CreateEncryptor(), CryptoStreamMode.Write))
                         {
-                            byte[] dataToEncrypt = Encoding.UTF8.GetBytes(Inputtext);
-                            csEncrypt.Write(dataToEncrypt, 0, dataToEncrypt.Length);
-                            csEncrypt.FlushFinalBlock();
-                            return Convert.ToBase64String(msEncrypt.ToArray());
+                            byte[] dataToEncrypt = Encoding.UTF8.GetBytes(Inputtext); // Преобразуем входной текст в массив байтов
+                            csEncrypt.Write(dataToEncrypt, 0, dataToEncrypt.Length); // Записываем данные в поток для шифрования
+                            csEncrypt.FlushFinalBlock(); // Завершаем процесс шифрования
+                            return Convert.ToBase64String(msEncrypt.ToArray()); // Возвращаем зашифрованный текст в формате Base64
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                return $"Ошибка AES шифрования: {ex.Message}";
+                return $"Ошибка AES шифрования: {ex.Message}"; // Обработка ошибок
             }
         }
 
@@ -165,40 +166,41 @@ namespace Encrypt
             {
                 string Inputtext = inputText;
 
-                // Проверка зашифрованного текста
+                // Проверка зашифрованного текста на пустоту
                 if (string.IsNullOrWhiteSpace(Inputtext))
                 {
-                    return "Введите текст для расшифрования.";
+                    return "Введите текст для расшифрования."; // Если текст пустой, возвращаем сообщение об ошибке
                 }
 
                 string keyStringAES = keyString;
                 string IVString = ivString;
 
-                // Проверка ключа и IV
+                // Проверка ключа и IV на пустоту
                 if (string.IsNullOrWhiteSpace(keyString) || string.IsNullOrWhiteSpace(ivString))
                 {
-                    return "Введите ключ и IV для AES.";
+                    return "Введите ключ и IV для AES."; // Если ключ или IV пустые, возвращаем сообщение об ошибке
                 }
 
-                byte[] key = Convert.FromHexString(keyString.Replace("-", ""));
-                byte[] iv = Convert.FromHexString(ivString.Replace("-", ""));
+                // Преобразование строки ключа из шестнадцатеричного формата в массив байтов
+                byte[] key = Convert.FromHexString(keyString.Replace("-", "")); // Убираем дефисы и преобразуем в байты
+                byte[] iv = Convert.FromHexString(ivString.Replace("-", "")); // То же самое для IV
 
-                using (Aes aes = Aes.Create())
+                using (Aes aes = Aes.Create()) // Создаем экземпляр AES
                 {
-                    aes.Key = key;
-                    aes.IV = iv;
+                    aes.Key = key; // Устанавливаем ключ
+                    aes.IV = iv;   // Устанавливаем вектор инициализации (IV)
 
-                    using (MemoryStream msDecrypt = new MemoryStream(Convert.FromBase64String(Inputtext)))
-                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, aes.CreateDecryptor(), CryptoStreamMode.Read))
-                    using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                    using (MemoryStream msDecrypt = new MemoryStream(Convert.FromBase64String(Inputtext))) // Преобразуем Base64-строку в байты
+                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, aes.CreateDecryptor(), CryptoStreamMode.Read)) // Создаем поток для расшифровки
+                    using (StreamReader srDecrypt = new StreamReader(csDecrypt)) // Читаем расшифрованные данные
                     {
-                        return srDecrypt.ReadToEnd();
+                        return srDecrypt.ReadToEnd(); // Возвращаем расшифрованный текст
                     }
                 }
             }
             catch (Exception ex)
             {
-                return $"Ошибка AES расшифрования: {ex.Message}";
+                return $"Ошибка AES расшифрования: {ex.Message}"; // Обработка ошибок
             }
         }
 
@@ -248,7 +250,6 @@ namespace Encrypt
                 {
                     return Task.FromResult("Ошибка: Файл не существует.");
                 }
-
                 File.WriteAllText(filePath, string.Empty);
                 return Task.FromResult("Содержимое файла очищено!");
             }
@@ -268,11 +269,10 @@ namespace Encrypt
             byte[] bytes = new byte[byteLength];
             using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
             {
-                rng.GetBytes(bytes);
+                rng.GetBytes(bytes); // Генерация случайных байтов
             }
-            return BigInteger.Abs(new BigInteger(bytes));
+            return BigInteger.Abs(new BigInteger(bytes)); // Возвращаем положительное число
         }
-
 
         public static (BigInteger, BigInteger, BigInteger) GenerateTwoLargePrimes(int bits)
         {
@@ -280,10 +280,10 @@ namespace Encrypt
             BigInteger prime2 = GenerateLargePrime(bits);  // Генерация второго простого числа
 
             // Public key: N = prime1 * prime2
-            BigInteger PublicKey = prime1 * prime2;
+            BigInteger PublicKey = prime1 * prime2; // Вычисление публичного ключа
 
             // F(N) = (prime1 - 1) * (prime2 - 1)
-            BigInteger F_n_ = (prime1 - 1) * (prime2 - 1);
+            BigInteger F_n_ = (prime1 - 1) * (prime2 - 1); // Функция Эйлера
 
             // Mutually Prime Number (E)
             BigInteger PrivatKey1;
@@ -292,29 +292,28 @@ namespace Encrypt
             do
             {
                 PrivatKey1 = GenerateLargeRandomNumber(1000); // Генерация случайного числа длиной 1000 бит
-            } while (NOD(F_n_, PrivatKey1) != 1);
+            } while (NOD(F_n_, PrivatKey1) != 1); // Проверка, что число взаимно просто с F(N)
 
             // Private key (D)
             BigInteger PrivatKey2;
             if (TryModInverse(PrivatKey1, F_n_, out PrivatKey2))
             {
-                // Возвращаем пару (PublicKey, PrivatKey)
+                // Возвращаем публичный и приватные ключи
                 return (PublicKey, PrivatKey1, PrivatKey2);
             }
 
-            // Если не удалось найти приватный ключ, возвращаем ошибку или какие-то значения по умолчанию
             throw new Exception("Не удалось найти обратный элемент для приватного ключа.");
         }
 
         public static BigInteger NOD(BigInteger a, BigInteger b)
         {
-            while (b != 0)
+            while (b != 0) // Алгоритм Евклида для нахождения НОД
             {
                 BigInteger temp = b;
                 b = a % b;
                 a = temp;
             }
-            return a;
+            return a; // Возвращаем наибольший общий делитель
         }
 
         // Алгоритм нахождения обратного числа по модулю (расчет приватного ключа)
@@ -329,7 +328,7 @@ namespace Encrypt
                 return false;
             }
 
-            while (a > 1)
+            while (a > 1) // Расширенный алгоритм Евклида
             {
                 q = a / m;
                 t = m;
@@ -345,34 +344,35 @@ namespace Encrypt
             if (x1 < 0)
                 x1 += m0;
 
-            result = x1;
+            result = x1; // Возвращаем обратный элемент
             return true;
         }
+
         public static BigInteger GenerateLargePrime(int bits)
         {
             Random random = new Random();
             while (true)
             {
                 byte[] bytes = new byte[bits / 8];
-                random.NextBytes(bytes);
+                random.NextBytes(bytes); // Генерация случайных байтов
                 bytes[bytes.Length - 1] |= 0x01;  // Устанавливаем старший бит в 1 (для нечетности)
                 BigInteger candidate = new BigInteger(bytes);
-                if (IsProbablePrime(candidate, 10))
+                if (IsProbablePrime(candidate, 10)) // Проверка на вероятность простоты
                 {
-                    return candidate;
+                    return candidate; // Возвращаем простое число
                 }
             }
         }
 
         static bool IsProbablePrime(BigInteger number, int certainty)
         {
-            if (number <= 1) return false;
-            if (number <= 3) return true;
-            if (number % 2 == 0) return false;
+            if (number <= 1) return false; // Число должно быть больше 1
+            if (number <= 3) return true;  // 2 и 3 — простые числа
+            if (number % 2 == 0) return false; // Четные числа не являются простыми
 
             BigInteger d = number - 1;
             int r = 0;
-            while (d % 2 == 0)
+            while (d % 2 == 0) // Находим d и r для теста Миллера-Рабина
             {
                 d /= 2;
                 r++;
@@ -380,7 +380,7 @@ namespace Encrypt
 
             Random random = new Random();
 
-            for (int i = 0; i < certainty; i++)
+            for (int i = 0; i < certainty; i++) // Проводим тест Миллера-Рабина
             {
                 BigInteger a;
                 do
@@ -392,13 +392,13 @@ namespace Encrypt
                     a = new BigInteger(bytes);
                 } while (a < 2 || a >= number - 1);
 
-                BigInteger x = BigInteger.ModPow(a, d, number);
+                BigInteger x = BigInteger.ModPow(a, d, number); // Вычисляем a^d mod number
                 if (x == 1 || x == number - 1) continue;
 
                 bool continueOuter = false;
                 for (int j = 0; j < r - 1; j++)
                 {
-                    x = BigInteger.ModPow(x, 2, number);
+                    x = BigInteger.ModPow(x, 2, number); // Повторяем возведение в квадрат
                     if (x == number - 1)
                     {
                         continueOuter = true;
@@ -407,9 +407,9 @@ namespace Encrypt
                 }
                 if (continueOuter) continue;
 
-                return false;
+                return false; // Если тест не пройден, число не является простым
             }
-            return true;
+            return true; // Если все тесты пройдены, число вероятно простое
         }
         //create key RSA
 
@@ -419,7 +419,7 @@ namespace Encrypt
         {
             using (Aes aes = Aes.Create())
             {
-                aes.KeySize = 256; // max 256
+                aes.KeySize = 256;
                 aes.GenerateKey();
                 aes.GenerateIV();
                 string keyString = Convert.ToBase64String(aes.Key);

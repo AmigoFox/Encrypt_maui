@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
 
@@ -17,21 +18,32 @@ namespace Encrypt
         private string currentProfile = "";
         private string content;
 
+        private bool _isFromAnotherPage;
+
         public MainPage()
         {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             InitializeComponent();
+            CommonInit();
+        }
+
+        protected override async void OnDisappearing()
+        {
+            base.OnDisappearing();
+
+            if (!string.IsNullOrEmpty(App.CurrentProfile))
+            {
+                await SaveKeysForProfile(App.CurrentProfile);
+            }
+        }
+        void CommonInit()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             CreateProfilesFolder();
             LoadProfiles();
-            LoadProfilesNow();
         }
 
-        public MainPage(string content)
-        {
-            this.content = content;
-        }
 
-        private async void OnEncryptClicked(object sender, EventArgs e)
+        private void OnEncryptClicked(object sender, EventArgs e)
         {
             string PublicKey = PublicKeyNEntry.Text;
             string PrivatKey = PrivateKeyDEntry.Text;
@@ -44,8 +56,6 @@ namespace Encrypt
             string IvKey = IvEntry.Text;
             string aesEncryptText = EncryptionService.AES_Encrypt(AesKey, IvKey, OutputLabelEncrypt.Text);
             OutputLabelEncrypt.Text = aesEncryptText;
-
-            await Navigation.PushAsync(new Encrypt.FileSettings(OutputLabelEncrypt.Text));
         }
 
         private void OnDecryptClicked(object sender, EventArgs e)
@@ -63,7 +73,7 @@ namespace Encrypt
             OutputText.Text = rsaEncryptedText;
         }
 
-        private void OnCreateProfileClicked(object sender, EventArgs e)
+        private  void OnCreateProfileClicked(object sender, EventArgs e)
         {
             try
             {
@@ -98,7 +108,7 @@ namespace Encrypt
                 ProfileNameEntry.Text = string.Empty;
 
                 LoadProfiles();
-                LoadProfilesNow();
+                LoadKeysForProfileAsync(profileName);
 
             }
             catch (Exception ex)
@@ -158,7 +168,6 @@ namespace Encrypt
             }
 
             LoadProfiles();
-            LoadProfilesNow();
         }
 
 
@@ -171,35 +180,47 @@ namespace Encrypt
             }
         }
 
-        private void LoadKeysForProfile(string profileName)
+        private async Task LoadKeysForProfileAsync(string profileName)
         {
-            string profilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ProfilesFolder, profileName);
+            string profilePath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                ProfilesFolder,
+                profileName);
+
+            // Убедимся, что папка существует (CreateDirectory ничего не делает, если есть) :contentReference[oaicite:3]{index=3}
+            await Task.Run(() => Directory.CreateDirectory(profilePath));
 
             try
             {
-                PrivateKeyDEntry.Text = File.Exists(Path.Combine(profilePath, "privateKeyRSA.txt"))
-                    ? File.ReadAllText(Path.Combine(profilePath, "privateKeyRSA.txt"))
-                    : "";
+                // Для каждого файла: если существует — читаем асинхронно и ждём результата :contentReference[oaicite:4]{index=4}
+                string privPath = Path.Combine(profilePath, "privateKeyRSA.txt");
+                PrivateKeyDEntry.Text = File.Exists(privPath)
+                    ? await File.ReadAllTextAsync(privPath)
+                    : string.Empty;
 
-                PublicKeyNEntry.Text = File.Exists(Path.Combine(profilePath, "publicKeyKeyRSA.txt"))
-                    ? File.ReadAllText(Path.Combine(profilePath, "publicKeyKeyRSA.txt"))
-                    : "";
+                string pubPath = Path.Combine(profilePath, "publicKeyKeyRSA.txt");
+                PublicKeyNEntry.Text = File.Exists(pubPath)
+                    ? await File.ReadAllTextAsync(pubPath)
+                    : string.Empty;
 
-                AesKeyEntry.Text = File.Exists(Path.Combine(profilePath, "AES.txt"))
-                    ? File.ReadAllText(Path.Combine(profilePath, "AES.txt"))
-                    : "";
+                string aesPath = Path.Combine(profilePath, "AES.txt");
+                AesKeyEntry.Text = File.Exists(aesPath)
+                    ? await File.ReadAllTextAsync(aesPath)
+                    : string.Empty;
 
-                IvEntry.Text = File.Exists(Path.Combine(profilePath, "IV.txt"))
-                    ? File.ReadAllText(Path.Combine(profilePath, "IV.txt"))
-                    : "";
+                string ivPath = Path.Combine(profilePath, "IV.txt");
+                IvEntry.Text = File.Exists(ivPath)
+                    ? await File.ReadAllTextAsync(ivPath)
+                    : string.Empty;
             }
             catch (Exception ex)
             {
-                DisplayAlert("Ошибка", $"Не удалось загрузить ключи: {ex.Message}", "OK");
+                // DisplayAlert — UI-операция, но async void для обработчиков жизненного цикла допустим :contentReference[oaicite:5]{index=5}
+                await Shell.Current.DisplayAlert("Ошибка", $"Не удалось загрузить ключи: {ex.Message}", "OK");
             }
         }
 
-        private void LoadProfiles()
+        private async void LoadProfiles()
         {
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ProfilesFolder);
             if (!Directory.Exists(path))
@@ -215,65 +236,20 @@ namespace Encrypt
             {
                 ProfilePicker.SelectedIndex = 0;
                 currentProfile = profileNames[0];
-                LoadKeysForProfile(currentProfile);
+                await LoadKeysForProfileAsync(currentProfile);
             }
         }
 
-        private void LoadProfilesNow()
-        {
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ProfilesFolder);
-
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-
-            var directories = Directory.GetDirectories(path);
-
-            // Очищаем список перед обновлением
-            profileNames.Clear();
-
-            foreach (var directory in directories)
-            {
-                profileNames.Add(Path.GetFileName(directory));
-            }
-
-            // Обновляем источник данных для ProfilePicker
-            ProfilePicker.ItemsSource = null;
-            ProfilePicker.ItemsSource = profileNames;
-
-            // Если остались профили, выбираем первый
-            if (profileNames.Count > 0)
-            {
-                ProfilePicker.SelectedIndex = 0;
-                currentProfile = profileNames[0];
-                LoadKeysForProfile(currentProfile);
-            }
-            else
-            {
-                // Если профилей нет, сбрасываем текущий профиль
-                currentProfile = null;
-                ProfilePicker.SelectedIndex = -1;
-            }
-        }
 
 
         private async void OnProfileChanged(object sender, EventArgs e)
         {
-            if (ProfilePicker.SelectedItem == null) return;
-            int selectedIndex = ProfilePicker.SelectedIndex;
-            if (selectedIndex != -1)
-            {
-                string selectedProfile = profileNames[selectedIndex];
-
-                if (!string.IsNullOrEmpty(App.CurrentProfile))
-                {
-                    await SaveKeysForProfile(App.CurrentProfile);
-                }
-
-                App.CurrentProfile = selectedProfile;
-                LoadKeysForProfile(App.CurrentProfile);
-            }
+            if (ProfilePicker.SelectedIndex < 0) return;
+            string sel = profileNames[ProfilePicker.SelectedIndex];
+            if (!string.IsNullOrEmpty(App.CurrentProfile))
+                await SaveKeysForProfile(App.CurrentProfile);
+            App.CurrentProfile = sel;
+            await LoadKeysForProfileAsync(sel);
         }
 
         private async Task SaveKeysForProfile(string profileName)// сделать проверрку на null, а то ключи могут быть пустыми при смене
@@ -357,7 +333,6 @@ namespace Encrypt
                 }
             }
         }
-
         private async void IV(object sender, TextChangedEventArgs e)
         {
             string newText = e.NewTextValue;
@@ -372,6 +347,88 @@ namespace Encrypt
             }
         }
 
-    }
 
+        // Работа с файлами
+
+        private string? _filePath;
+        private string? _fileName;
+
+
+        private async void SelectFileButtonEncrypt(object sender, EventArgs e)
+        {
+            try
+            {
+                var result = await FilePicker.Default.PickAsync();
+                if (result != null)
+                {
+                    _fileName = result.FileName;
+                    _filePath = result.FullPath;
+                    await DisplayAlert("Выбранный файл", $"Имя файла: {_fileName}\nПуть: {_filePath}", "OK");
+                    fileName.Text = _fileName;
+                    filePath.Text = _filePath;
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Ошибка", ex.Message, "OK");
+            }
+        }
+
+        private async void ClearFileButtonEncrypt(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(_filePath))
+            {
+                await DisplayAlert("Ошибка", "Сначала выберите файл.", "OK");
+                return;
+            }
+
+            string result = await EncryptionService.ClearFileAsync(_filePath);
+            await DisplayAlert("Результат", result, "OK");
+        }
+
+        private async void SaveFileButtonEncrypt(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(_filePath))
+            {
+                await DisplayAlert("Ошибка", "Сначала выберите файл.", "OK");
+                return;
+            }
+            
+            if(string.IsNullOrEmpty(OutputLabelEncrypt.Text))
+            {
+
+                string textToSave = OutputLabelEncrypt.Text ?? string.Empty;
+                string result = await EncryptionService.SaveFileButtonEncrypt(_filePath, textToSave);
+                await DisplayAlert("Ошибка", "Текс в поле зашифрованное сообщение пуст", "OK");
+                return;
+            }
+            else{
+                string textToSave = OutputLabelEncrypt.Text ?? string.Empty;
+                string result = await EncryptionService.SaveFileButtonEncrypt(_filePath, textToSave);
+                await DisplayAlert("Ок", "Файл записан", "OK");
+            }
+
+
+        }
+
+        private async void ReadFileButtonEncrypt(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(_filePath))
+            {
+                await DisplayAlert("Ошибка", "Сначала выберите файл.", "OK");
+                return;
+            }
+
+            (string content, string message) result = await EncryptionService.ReadFileAsync(_filePath);
+
+            if (!string.IsNullOrEmpty(result.content))
+            {
+                OutputTextEntry.Text = result.content;
+            }
+            else
+            {
+                await DisplayAlert("Ошибка", result.message, "OK");
+            }
+        }
+    }
 }

@@ -13,11 +13,6 @@
         Route="MainPage" />
     
     <ShellContent
-        Title="Найстройки файла"
-        ContentTemplate="{DataTemplate local:FileSettings}"
-        Route="FileSettings" />
-
-    <ShellContent
         Title="Создание ключей"
         ContentTemplate="{DataTemplate local:CreateKey}"
         Route="CreateKey" />

@@ -3,172 +3,237 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Encrypt.MainPage">
 
-    <StackLayout Spacing="5">
-        <ScrollView Orientation="Vertical" HeightRequest="100">
-            <Editor x:Name="InputTextEntry" 
-                    Placeholder="Введите текст для шифрования"
-                    PlaceholderColor="Black"
-                    FontSize="18"
-                    BackgroundColor="LightGray"
-                    TextColor="Black"
-                    HorizontalTextAlignment="Center"/>
-        </ScrollView>
-
-        <!-- Поля для ключей RSA -->
-        <ScrollView Orientation="Both" HeightRequest="100">
-            <StackLayout Orientation="Horizontal" Spacing="10">
-                <Editor x:Name="PublicKeyNEntry" 
-                        Placeholder="Публичный ключ RSA"
-                        FontSize="16"
-                        WidthRequest="160"
+    <ScrollView>
+        <StackLayout Spacing="15" Margin="10">
+            <!-- Input Section -->
+            <Frame CornerRadius="10" BackgroundColor="LightGray" Padding="10">
+                <Editor x:Name="InputTextEntry" 
+                        Placeholder="Введите текст для шифрования"
                         PlaceholderColor="Black"
-                        TextChanged="PublicKey_RSA"/>
-                
-                <Editor x:Name="PrivateKeyDEntry" 
-                        Placeholder="Приватный ключ RSA"
-                        FontSize="16"
-                        WidthRequest="160"
-                        PlaceholderColor="Black"
-                        TextChanged="PrivatKey_RSA"/>
-            </StackLayout>
-        </ScrollView>
+                        FontSize="{OnPlatform iOS=16, Android=16, WinUI=18}"
+                        BackgroundColor="Transparent"
+                        TextColor="Black"
+                        AutoSize="TextChanges"/>
+            </Frame>
 
-        <!-- Поля для ключей AES -->
-        <ScrollView Orientation="Both" HeightRequest="100">
-            <StackLayout Orientation="Horizontal" Spacing="10">
-                <Editor x:Name="AesKeyEntry" 
-                        Placeholder="Ключ AES (16/24/32 байта)"
-                        FontSize="16"
-                        WidthRequest="160"
-                        PlaceholderColor="Black"
-                        TextChanged="AES"/>
-                
-                <Editor x:Name="IvEntry" 
-                        Placeholder="ключ IV (16 байт)"
-                        FontSize="16"
-                        WidthRequest="160"
-                        PlaceholderColor="Black"
-                        TextChanged="IV"
-                        />
-            </StackLayout>
-        </ScrollView>
+            <!-- RSA Keys -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10" RowSpacing="10">
+                <Frame Grid.Column="0" CornerRadius="10" BackgroundColor="LightGray" Padding="10">
+                    <Editor x:Name="PublicKeyNEntry" 
+                            Placeholder="Публичный ключ RSA"
+                            FontSize="{OnPlatform iOS=14, Android=14, WinUI=16}"
+                            PlaceholderColor="Black"
+                            TextChanged="PublicKey_RSA"
+                            HeightRequest="50"
+                            AutoSize="TextChanges"/>
+                </Frame>
+                <Frame Grid.Column="1" CornerRadius="10" BackgroundColor="LightGray" Padding="10">
+                    <Editor x:Name="PrivateKeyDEntry" 
+                            Placeholder="Приватный ключ RSA"
+                            FontSize="{OnPlatform iOS=14, Android=14, WinUI=16}"
+                            PlaceholderColor="Black"
+                            TextChanged="PrivatKey_RSA"
+                            HeightRequest="50"
+                            AutoSize="TextChanges"/>
+                </Frame>
+            </Grid>
 
-        <!-- Кнопка для шифрования -->
-        <Button Text="Зашифровать"
-                Clicked="OnEncryptClicked"
-                BackgroundColor="Black"
-                TextColor="White"
-                FontSize="20"
-                CornerRadius="10"/>
+            <!-- AES Keys -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10" RowSpacing="10">
+                <Frame Grid.Column="0" CornerRadius="10" BackgroundColor="LightGray" Padding="10">
+                    <Editor x:Name="AesKeyEntry" 
+                            Placeholder="Ключ AES (16/24/32 байта)"
+                            FontSize="{OnPlatform iOS=14, Android=14, WinUI=16}"
+                            PlaceholderColor="Black"
+                            TextChanged="AES"
+                            AutoSize="TextChanges"/>
+                </Frame>
+                <Frame Grid.Column="1" CornerRadius="10" BackgroundColor="LightGray" Padding="10">
+                    <Editor x:Name="IvEntry" 
+                            Placeholder="ключ IV (16 байт)"
+                            FontSize="{OnPlatform iOS=14, Android=14, WinUI=16}"
+                            PlaceholderColor="Black"
+                            TextChanged="IV"
+                            AutoSize="TextChanges"/>
+                </Frame>
+            </Grid>
 
-        <!-- Поле для результата шифрования -->
-        <ScrollView Orientation="Vertical" HeightRequest="100">
-            <Editor x:Name="OutputLabelEncrypt"
-                    Placeholder="Результат шифрования" 
-                    PlaceholderColor="Black"
+            <!-- Encrypt Button -->
+            <Button Text="Зашифровать"
+                    Clicked="OnEncryptClicked"
+                    BackgroundColor="Black"
+                    TextColor="White"
+                    FontSize="{OnPlatform iOS=18, Android=18, WinUI=20}"
+                    CornerRadius="10"
+                    HeightRequest="{OnPlatform iOS=45, Android=45, WinUI=40}"/>
+
+            <!-- Encrypted Result -->
+            <Frame CornerRadius="10" BackgroundColor="LightGray" Padding="10">
+                <Editor x:Name="OutputLabelEncrypt"
+                        Placeholder="Результат шифрования"
+                        PlaceholderColor="Black"
+                        BackgroundColor="Transparent"
+                        TextColor="Purple"
+                        HeightRequest="80"
+                        FontSize="{OnPlatform iOS=16, Android=16, WinUI=18}"
+                        AutoSize="TextChanges"/>
+            </Frame>
+
+            <BoxView HeightRequest="1" BackgroundColor="Gray" Margin="0,10"/>
+
+            <!-- Decrypt Input -->
+            <Frame CornerRadius="10" BackgroundColor="LightGray" Padding="10"   >
+                <Editor x:Name="OutputTextEntry" 
+                        Placeholder="Введите текст для расшифрования"
+                        FontSize="{OnPlatform iOS=16, Android=16, WinUI=18}"
+                        BackgroundColor="Transparent"
+                        TextColor="Black"
+                        PlaceholderColor="Black"
+                        AutoSize="TextChanges"
+                        HeightRequest="{OnPlatform iOS=45, Android=45, WinUI=40}"/>
+            </Frame>
+
+            <!-- Decrypt Button -->
+            <Button Text="Расшифровать"
+                    Clicked="OnDecryptClicked"
+                    BackgroundColor="Black"
+                    TextColor="White"
+                    FontSize="{OnPlatform iOS=18, Android=18, WinUI=20}"
+                    CornerRadius="10"
+                    HeightRequest="{OnPlatform iOS=45, Android=45, WinUI=40}"/>
+
+            <!-- Decrypted Result -->
+            <Frame CornerRadius="10" BackgroundColor="LightGray" Padding="10">
+                <Editor x:Name="OutputText"
+                        Placeholder="Результат расшифрования"
+                        PlaceholderColor="Black"
+                        BackgroundColor="Transparent"
+                        TextColor="Purple"
+                        HeightRequest="80"
+                        FontSize="{OnPlatform iOS=16, Android=16, WinUI=18}"
+                        AutoSize="TextChanges"/>
+            </Frame>
+
+            <!-- Hidden Field -->
+            <Editor x:Name="OutputText_pr"
+                    Text="Результат расшифрования"
                     BackgroundColor="LightGray"
                     TextColor="Purple"
                     FontSize="18"
-                    HorizontalTextAlignment="Center"/>
-        </ScrollView>
+                    IsVisible="False"/>
 
-        <BoxView HeightRequest="1" BackgroundColor="Gray" />
+            <!-- Profile Management -->
+            <Frame CornerRadius="10" BackgroundColor="#f0f0f0" Padding="10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Введите название нового профиля:" 
+                           FontSize="{OnPlatform iOS=14, Android=14, WinUI=16}"/>
+                    <Entry x:Name="ProfileNameEntry" 
+                           Placeholder="Имя профиля"
+                           FontSize="{OnPlatform iOS=14, Android=14, WinUI=16}"/>
 
-        <!-- Поле для ввода зашифрованного текста -->
-        <ScrollView Orientation="Vertical" HeightRequest="100">
-            <Editor x:Name="OutputTextEntry" 
-                    Placeholder="Введите текст для расшифрования"
-                    FontSize="18"
-                    BackgroundColor="LightGray"
-                    TextColor="Black"
-                    PlaceholderColor="Black"
-                    HorizontalTextAlignment="Center"/>
-        </ScrollView>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Button Grid.Column="0" 
+                                Text="Создать профиль" 
+                                Clicked="OnCreateProfileClicked"
+                                FontSize="{OnPlatform iOS=14, Android=14, WinUI=16}"/>
+                        <Button Grid.Column="1" 
+                                Text="Удалить профиль" 
+                                Clicked="OnDeleteProfileClicked"
+                                FontSize="{OnPlatform iOS=14, Android=14, WinUI=16}"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
 
-        <!-- Кнопка для расшифрования -->
-        <Button Text="Расшифровать"
-                Clicked="OnDecryptClicked"
-                BackgroundColor="Black"
-                TextColor="White"
-                FontSize="20"
-                CornerRadius="10"/>
+            <!-- Profile Selection -->
+            <Frame CornerRadius="10" BackgroundColor="#f0f0f0" Padding="10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Выберите профиль для смены ключей" 
+                           FontSize="{OnPlatform iOS=14, Android=14, WinUI=16}"
+                           HorizontalOptions="Center"/>
 
-        <!-- Поле для результата расшифрования -->
-        <ScrollView Orientation="Vertical" HeightRequest="100">
-            <Editor x:Name="OutputText"
-                    Placeholder="Результат расшифрования"
-                    PlaceholderColor="Black"
-                    BackgroundColor="LightGray"
-                    TextColor="Purple"
-                    FontSize="18"
-                    HorizontalTextAlignment="Center"/>
-        </ScrollView>
+                    <Picker x:Name="ProfilePicker" 
+                            SelectedIndexChanged="OnProfileChanged"
+                            FontSize="{OnPlatform iOS=14, Android=14, WinUI=16}"/>
 
-        <!-- Скрытое поле для промежуточного результата -->
-        <Editor x:Name="OutputText_pr"
-                Text="Результат расшифрования"
-                BackgroundColor="LightGray"
-                TextColor="Purple"
-                FontSize="18"
-                HorizontalTextAlignment="Center"
-                IsVisible="False"/>
+                    <Label Text="Выберите профили для удаления" 
+                           FontSize="{OnPlatform iOS=14, Android=14, WinUI=16}"
+                           HorizontalOptions="Center"/>
 
-        <!-- Создание нового профиля -->
-        <Label Text="Введите название нового профиля:" />
-        <Entry x:Name="ProfileNameEntry" Placeholder="Имя профиля" />
-
-        <ScrollView Orientation="Both" HeightRequest="50">
-            <StackLayout Orientation="Horizontal" Spacing="10">
-                <Button Text="Создать профиль" Clicked="OnCreateProfileClicked" />
-                <Button Text="Удалить профиль" Clicked="OnDeleteProfileClicked" />
-            </StackLayout>
-        </ScrollView>
-
-        <!-- Выбор профиля -->
-
-        <ScrollView Orientation="Both" HeightRequest="50">
-            <StackLayout Orientation="Horizontal" Spacing="50"
-                 HorizontalOptions="Center" VerticalOptions="Center">
-
-  
-                <Label Text="Выберите профиль для смены ключей" 
-               HorizontalOptions="Center" 
-               VerticalOptions="Center"
-               HorizontalTextAlignment="Center"/>
-
-
-                <Picker x:Name="ProfilePicker" 
-                SelectedIndexChanged="OnProfileChanged" 
-                HorizontalOptions="Center"
-                VerticalOptions="Center"/>
-
-                <Label Text="Выберите профиль(ли) для удаления" 
-               HorizontalOptions="Center" 
-               VerticalOptions="Center"
-               HorizontalTextAlignment="Center"/>
-                <!-- Внутренний ScrollView с коллекцией -->
-                <ScrollView Orientation="Vertical" HeightRequest="40">
                     <CollectionView x:Name="ProfileListView"
-                            SelectionMode="Multiple"
-                            ItemsSource="{Binding ProfileNames}"
-                            HorizontalOptions="Center"
-                            VerticalOptions="Center">
+                                   SelectionMode="Multiple"
+                                   ItemsSource="{Binding ProfileNames}"
+                                   HeightRequest="100">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
                                 <Label Text="{Binding .}" 
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"
-                               HorizontalTextAlignment="Center"/>
+                                       FontSize="{OnPlatform iOS=14, Android=14, WinUI=16}"
+                                       Padding="5"/>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                </ScrollView>
+                </VerticalStackLayout>
+            </Frame>
+            
+            <!--  работа с файлом -->
+            <Button Text="Сохранить текст шифрования"
+                Clicked="SaveFileButtonEncrypt"
+                BackgroundColor="Black"
+                TextColor="White"
+                FontSize="20"
+                CornerRadius="10"
+                />
 
-            </StackLayout>
-        </ScrollView>
+            <Button Text="Прочитать файл, для дальнейщей расшифровки"
+                Clicked="ReadFileButtonEncrypt"
+                BackgroundColor="Black"
+                TextColor="White"
+                FontSize="20"
+                CornerRadius="10"
+                />
+
+            <Button Text="Выбрать файл (.txt) для сохранений"
+                Clicked="SelectFileButtonEncrypt"
+                BackgroundColor="Black"
+                TextColor="White"
+                FontSize="20"
+                CornerRadius="10"
+                />
+
+            <Button Text="Очистить выбранный файл"
+                Clicked="ClearFileButtonEncrypt"
+                BackgroundColor="Black"
+                TextColor="White"
+                FontSize="20"
+                CornerRadius="10"
+                />
+            <!--  путь файла -->
+            <ScrollView Orientation="Vertical" HeightRequest="100">
+                <Editor x:Name="filePath"
+                HeightRequest="100"
+                Keyboard="Chat"
+                Placeholder="Путь к файлу" 
+                PlaceholderColor="Black"
+                BackgroundColor="LightGray"
+                TextColor="Purple"
+                FontSize="18"
+                HorizontalTextAlignment="Center"/>
+
+            </ScrollView>
 
 
+            <!--  имя файла -->
+            <ScrollView Orientation="Vertical" HeightRequest="100">
+                <Editor x:Name="fileName"
+                    Keyboard="Chat"
+                    Placeholder="Имя файла" 
+                    PlaceholderColor="Black"
+                    BackgroundColor="LightGray"
+                    TextColor="Purple"
+                    FontSize="18"
+                    HorizontalTextAlignment="Center"/>
+            </ScrollView>
+        </StackLayout>
 
 
-    </StackLayout>
+    </ScrollView>
 </ContentPage>
