@@ -54,7 +54,7 @@
                     HorizontalTextAlignment="Center"/>
         </ScrollView>
 
-        <!--  Приватный ключ 2 RSA -->
+        <!--  Приватный ключ 2 RSA  -->
         <Label>Приватный ключ 2 RSA</Label>
         <ScrollView Orientation="Vertical" HeightRequest="80">
             <Editor x:Name="PrivatKeyRSA2"
