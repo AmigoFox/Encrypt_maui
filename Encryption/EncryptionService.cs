@@ -414,7 +414,7 @@ namespace Encrypt
         //create key RSA
 
 
-        //create key AES
+        //create key AES 
         public static (string Key, string IV) CreateKeyAESandIV()
         {
             using (Aes aes = Aes.Create())
