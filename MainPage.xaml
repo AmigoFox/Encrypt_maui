@@ -16,7 +16,7 @@
                         AutoSize="TextChanges"/>
             </Frame>
 
-            <!-- RSA Keys -->
+            <!-- RSA Keys  -->
             <Grid ColumnDefinitions="*,*" ColumnSpacing="10" RowSpacing="10">
                 <Frame Grid.Column="0" CornerRadius="10" BackgroundColor="LightGray" Padding="10">
                     <Editor x:Name="PublicKeyNEntry" 
