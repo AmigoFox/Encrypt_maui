@@ -93,7 +93,7 @@
                         HeightRequest="{OnPlatform iOS=45, Android=45, WinUI=40}"/>
             </Frame>
 
-            <!-- Decrypt Button -->
+            <!-- Decrypt Button  -->
             <Button Text="Расшифровать"
                     Clicked="OnDecryptClicked"
                     BackgroundColor="Black"

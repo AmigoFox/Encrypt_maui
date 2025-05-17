@@ -427,7 +427,7 @@ namespace Encrypt
             }
             else
             {
-                await DisplayAlert("Ошибка", result.message, "OK");// вывод ошибки
+                await DisplayAlert("Ошибка", result.message, "OK");
             }
         }
     }
