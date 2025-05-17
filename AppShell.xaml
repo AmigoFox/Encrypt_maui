@@ -16,4 +16,4 @@
         Title="Создание ключей"
         ContentTemplate="{DataTemplate local:CreateKey}"
         Route="CreateKey" /> 
-</Shell> 
+</Shell>   
